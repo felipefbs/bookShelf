@@ -12,6 +12,6 @@ func main() {
 	models.ConnectDatabase()
 
 	router.GET("/books", controllers.GetAllBooks)
-
+	router.POST("/books", controllers.CreateBook)
 	router.Run()
 }
