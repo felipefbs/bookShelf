@@ -36,3 +36,16 @@ func CreateBook(c *gin.Context) {
 	models.DB.Create(&book)
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
+
+// GetBook function returns a single book from the database based on it ID
+func GetBook(c *gin.Context) {
+	var book models.Book
+
+	err := models.DB.Where("id = ?", c.Param("id")).First(&book).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": book})
+}
