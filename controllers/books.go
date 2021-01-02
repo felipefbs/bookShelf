@@ -78,3 +78,18 @@ func UpdateBook(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
+
+// DeleteBook removes a single book from the database
+func DeleteBook(c *gin.Context) {
+	var book models.Book
+
+	err := models.DB.Where("id", c.Param("id")).First(&book).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+
+	models.DB.Delete(&book)
+
+	c.JSON(http.StatusOK, gin.H{"data": true})
+}
