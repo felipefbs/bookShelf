@@ -13,6 +13,12 @@ type CreateBookInput struct {
 	Author string `json:"author" binding:"required"`
 }
 
+// UpdateBookInput struct
+type UpdateBookInput struct {
+	Title  string `json:"title"`
+	Author string `json:"author"`
+}
+
 // GetAllBooks function returns all books from the database
 func GetAllBooks(c *gin.Context) {
 	var books []models.Book
@@ -46,6 +52,29 @@ func GetBook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{"data": book})
+}
+
+// UpdateBook changes information of a existing book
+func UpdateBook(c *gin.Context) {
+	var book models.Book
+
+	err := models.DB.Where("id = ?", c.Param("id")).First(&book).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+
+	var input UpdateBookInput
+
+	err = c.ShouldBindJSON(&input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	models.DB.Model(&book).Updates(input)
 
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
